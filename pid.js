@@ -15,8 +15,8 @@
     window.addEventListener("resize", resizeCanvas);
 
     ////////// PID //////////
-    var x = 20;//实时坐标
-    var y = 20;
+    var x = window.innerWidth/2;//实时坐标
+    var y = window.innerHeight/2;
     var vx = 0;//实时速度
     var vy = 0;
 
