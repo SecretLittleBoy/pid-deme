@@ -15,16 +15,16 @@
     window.addEventListener("resize", resizeCanvas);
 
     ////////// PID //////////
-    var x = 20;
+    var x = 20;//实时坐标
     var y = 20;
-    var vx = 0;
+    var vx = 0;//实时速度
     var vy = 0;
 
-    var setpointX = x;
+    var setpointX = x;//目标点
     var setpointY = y;
-    var prevErrorX = 0;
+    var prevErrorX = 0;//前时刻误差
     var prevErrorY = 0;
-    var integralX = 0;
+    var integralX = 0;//积分
     var integralY = 0;
 
     var kp = 3.0;
@@ -33,26 +33,43 @@
 
     var history = [];
     var historyTick = 0;
+    var historyErrorX=[];
+    var historyErrorY=[];
 
     function pid() {
         var errorX = setpointX - x;
-        integralX += errorX;
-        var derivativeX = errorX - prevErrorX;
+        if (historyTick == 2) {
+            if (historyErrorX.length >= 50) {
+                integralX -= historyErrorX[0];
+                historyErrorX.shift();
+            }
+            historyErrorX.push(errorX);
+            integralX += errorX;
+        }
+        var derivativeX = errorX - prevErrorX;//求导
         prevErrorX = errorX;
 
+
         var errorY = setpointY - y;
-        integralY += errorY;
+        if (historyTick == 2) {
+            if (historyErrorY.length >= 50) {
+                integralY -= historyErrorY[0];
+                historyErrorY.shift();
+            }
+            historyErrorY.push(errorY);
+            integralY += errorY;
+        }
         var derivativeY = errorY - prevErrorY;
         prevErrorY = errorY;
 
         return [0.001 * (kp * errorX + ki * integralX + kd * derivativeX),
-            0.001 * (kp * errorY + ki * integralY + kd * derivativeY)];
+            0.001 * (kp * errorY + ki * integralY + kd * derivativeY)];//返回加速度
     }
 
     function update() {
         var a = pid();
         var ax = a[0];
-        var ay = a[1];
+        var ay = a[1];//加速度
         var maxA = 0.2;
         ax = Math.max(Math.min(ax, maxA), -maxA);
         ay = Math.max(Math.min(ay, maxA), -maxA);
@@ -74,7 +91,7 @@
         ctx.fillRect(0, 0, c.width, c.height);
 
         for (var i = 0; i < history.length; ++i) {
-            ctx.fillStyle = "rgba(96,185,154,"+(i/history.length)+")";
+            ctx.fillStyle = "rgba(96,185,154,"+(i/history.length)+")";//透明度递增
             ctx.beginPath();
             ctx.arc(history[i][0], history[i][1], 5, 0, 2 * Math.PI, false);
             ctx.closePath();

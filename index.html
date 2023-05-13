@@ -32,6 +32,9 @@
             top: 0;
             margin: 10px;
         }
+        .control input {
+            width: 80px;
+        }
     </style>
 </head>
 <body>
@@ -41,11 +44,11 @@
 </span>
 <span class="control">
     <label for="kp">Kp</label>
-    <input type="text" id="kp" size="8">
+    <input type="number" id="kp" >
     <label for="ki">Ki</label>
-    <input type="text" id="ki" size="8">
+    <input type="number" id="ki" >
     <label for="kd">Kd</label>
-    <input type="text" id="kd" size="8">
+    <input type="number" id="kd">
 </span>
 <canvas id="c"></canvas>
 <script src="pid.js"></script>
